@@ -25,37 +25,37 @@ You need a Gmail service account in order to use this library.
 Here's the complete list of steps required to correctly create and configure it:
 
 1. create a Google project
-	1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
-	2. [create a new project](https://console.cloud.google.com/projectcreate)
+   1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
+   2. [create a new project](https://console.cloud.google.com/projectcreate)
 2. enable the Gmail API
-	1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
-	2. from the menu, choose *APIs & Services* &rarr; *Library*
-	3. search for *Gmail API* and enable them for the project created above
+   1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
+   2. from the menu, choose *APIs & Services* &rarr; *Library*
+   3. search for *Gmail API* and enable them for the project created above
 4. create a Service Account
-	1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
-	2. from the menu, choose *IAM & Admin* &rarr; *Service Accounts*
-	3. click the *+ Create service account* button
-		1. in the Step 1, enter any name/description you like
-		2. in the Step 2, choose the *Owner* Role (*Full access to all resources.*)
-		3. in the Step 3, you can leave the default (empty) values
-	4. in the Service Account list, choose the *Create key* action for the newly created service account
-		1. download the key in *JSON* format
-		2. save the `.json` file in a secure location
-	3.  in the Service Account list, choose the *Edit* action for the newly created service account
-		1. in the *Service account status* section, click the *Show domain-wide delegation*
-		2. check the *Enable G Suite Domain-wide Delegation* option
-		3. save
+   1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
+   2. from the menu, choose *IAM & Admin* &rarr; *Service Accounts*
+   3. click the *+ Create service account* button
+      1. in the Step 1, enter any name/description you like
+      2. in the Step 2, choose the *Owner* Role (*Full access to all resources.*)
+      3. in the Step 3, you can leave the default (empty) values
+   4. in the Service Account list, choose the *Create key* action for the newly created service account
+      1. download the key in *JSON* format
+      2. save the `.json` file in a secure location
+   3.  in the Service Account list, choose the *Edit* action for the newly created service account
+      1. in the *Service account status* section, click the *Show domain-wide delegation*
+      2. check the *Enable G Suite Domain-wide Delegation* option
+      3. save
 4. grant the required OAuth scopes
-	1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
-	2. from the menu, choose *Security* &rarr; *API Controls*
-	3. in the *Domain wide delegation* section, click the *Manage domain wide delegation* link
-	4. add a new API client
-		1. in the *Client ID* field enter the number associated to the `client_id` key in the `.json` file you downloaded above
-		2. you have to specify these *OAuth scopes* ([here](https://developers.google.com/identity/protocols/oauth2/scopes) you can find all the available scopes):
-			- `https://www.googleapis.com/auth/gmail.labels`
-			  (required to manage the folders of the Gmail accounts)
-			- `https://www.googleapis.com/auth/gmail.settings.basic`
-			  (required to manage the filters of the Gmail accounts)
+   1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
+   2. from the menu, choose *Security* &rarr; *API Controls*
+   3. in the *Domain wide delegation* section, click the *Manage domain wide delegation* link
+   4. add a new API client
+      1. in the *Client ID* field enter the number associated to the `client_id` key in the `.json` file you downloaded above
+      2. you have to specify these *OAuth scopes* ([here](https://developers.google.com/identity/protocols/oauth2/scopes) you can find all the available scopes):
+         - `https://www.googleapis.com/auth/gmail.labels`
+           (required to manage the folders of the Gmail accounts)
+         - `https://www.googleapis.com/auth/gmail.settings.basic`
+           (required to manage the filters of the Gmail accounts)
 
 ## Sample usage
 
