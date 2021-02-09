@@ -1,0 +1,46 @@
+{
+    "name": "mlocati/tbfilters2gmail",
+    "description": "A PHP library that allows you to parse Thunderbird rule files (msgFilterRules.dat) and easily export them to Google Gmail filters",
+    "type": "library",
+	"keywords": [
+		"thunderbird",
+		"filters",
+		"rules",
+		"gmail",
+		"msgFilterRules.dat"
+	],
+	"homepage": "https://github.com/mlocati/tbfilters2gmail",
+	"readme": "README.md",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michele Locati",
+            "email": "michele@locati.it",
+			"role": "author"
+        }
+    ],
+	"support": {
+		"issues": "https://github.com/mlocati/tbfilters2gmail/issues",
+		"source": "https://github.com/mlocati/tbfilters2gmail/issues"
+	},
+	"require": {
+        "php": "^7.4 || ^8",
+        "google/apiclient": "^2.9"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.18.2"
+    },
+    "autoload": {
+		"psr-4": {
+			"TBF2GM\\": "src/"
+		}
+	},
+	"config": {
+		"optimize-autoloader": true,
+		"sort-packages": true
+	},
+	"scripts": {
+		"cs-check": "php-cs-fixer fix --path-mode=intersection --config=.php_cs.dist --dry-run -v .",
+        "cs-fix": "php-cs-fixer fix --path-mode=intersection --config=.php_cs.dist ."
+	}
+}
