@@ -46,7 +46,7 @@ Here's the complete list of steps required to correctly create and configure it:
       2. check the *Enable G Suite Domain-wide Delegation* option
       3. save
 4. grant the required OAuth scopes
-   1. go to the [Google Cloud Platform](https://console.cloud.google.com/) dashboard page
+   1. go to the [Google Admin](https://admin.google.com/) page
    2. from the menu, choose *Security* &rarr; *API Controls*
    3. in the *Domain wide delegation* section, click the *Manage domain wide delegation* link
    4. add a new API client
