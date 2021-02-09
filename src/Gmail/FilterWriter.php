@@ -53,23 +53,16 @@ class FilterWriter
      */
     public function ensureFilters(?FilterList $filters): array
     {
-        $enabledFilters = [];
+        $exceptions = [];
         if ($filters !== null) {
             foreach ($filters->getIterator() as $filter) {
                 /** @var \TBF2GM\Filter $filter */
                 if ($filter->isEnabled()) {
-                    $enabledFilters[] = $filter;
-                }
-            }
-        }
-        $exceptions = [];
-        if ($enabledFilters !== []) {
-            $existingFilters = $this->getResource()->listUsersSettingsFilters('me')->getFilter();
-            foreach ($enabledFilters as $filter) {
-                try {
-                    $this->ensureFilter($existingFilters, $filter);
-                } catch (Exception\FilterNotCreableException $x) {
-                    $exceptions[] = $x;
+                    try {
+                        $this->ensureFilter($filter);
+                    } catch (Exception\FilterNotCreableException $x) {
+                        $exceptions[] = $x;
+                    }
                 }
             }
         }
@@ -110,19 +103,17 @@ class FilterWriter
     }
 
     /**
-     * @param Google_Service_Gmail_Filter[] $existingFilters
-     *
      * @throws \TBF2GM\Exception\FilterNotCreableException
      */
-    protected function ensureFilter(array &$existingFilters, Filter $filter)
+    protected function ensureFilter(Filter $filter): void
     {
         $gmailFilter = $this->createGmailFilter($filter);
-        if (!$this->gmailFilterAlreadyExisting($existingFilters, $gmailFilter)) {
-            try {
-                $existingFilters[] = $this->getResource()->create('me', $gmailFilter);
-            } catch (GoogleServiceException $x) {
-                $errors = $x->getErrors();
-                if ($errors[0]['message'] ?? null === 'Unrecognized forwarding address') {
+        try {
+            $this->getResource()->create('me', $gmailFilter);
+        } catch (GoogleServiceException $x) {
+            $errors = $x->getErrors();
+            switch ($errors[0]['message'] ?? null) {
+                case 'Unrecognized forwarding address':
                     $x2 = new Exception\UnrecognizedForwardingAddressException($errors[0]['message']);
                     $x2->setFilter($filter);
                     foreach ($filter->getActions() as $action) {
@@ -131,9 +122,11 @@ class FilterWriter
                         }
                     }
                     throw $x2;
-                }
-                throw $x;
+                case 'Filter already exists':
+                    $x2 = new Exception\FilterAlreadyExistsException($errors[0]['message']);
+                    throw $x2->setFilter($filter);
             }
+            throw $x;
         }
     }
 
@@ -151,10 +144,5 @@ class FilterWriter
         }
 
         return $result;
-    }
-
-    protected function gmailFilterAlreadyExisting(array $existingFilters, Google_Service_Gmail_Filter $filter): bool
-    {
-        return false;
     }
 }
