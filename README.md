@@ -5,7 +5,7 @@ This library helps you copying Thunderbird filters to Gmail.
 ## Introduction
 
 Thunderbird saves email filters in a file named `msgFilterRules.dat`.
-This library can read this file, and create automatically the required folders and filders in a Gmail account.
+This library can read this file, and create automatically the required folders and filters in a Gmail account.
 
 ## Requirements
 
@@ -62,7 +62,7 @@ Here's the complete list of steps required to correctly create and configure it:
 Let's assume that:
 
 - you downloaded the JSON key for the service account to `path/to/key.json`
-- the Thunderbird filters files is available at `path/to/msgFilterRules.dat'
+- the Thunderbird filters files is available at `path/to/msgFilterRules.dat`
 - the email address of the Gmail account is `me@my.domain`
 
 With the above data, you can copy the Thunderbird filters to Gmail with a few lines of code like these:
@@ -99,7 +99,6 @@ Ad this point, you should have the Thunderbird filters available in Gmail.
 - It seems it's not possible to create Gmail filters with header-specific criterias
 - Not every criteria/action has been implemented in this library.
   We implemented only the ones we actually needed.
-- Running the migration procedure more than once will create duplicated copies of the filters
 
 ## How to delete all the Gmail filters and/or folders
 
