@@ -72,7 +72,7 @@ With the above data, you can copy the Thunderbird filters to Gmail with a few li
 $filters = \TBF2GM\MsgFilterRulesDatParser::fromFile('path/to/key.json')->parse();
 
 // Initialize the Google API Client
-$client = \new Google\Client();
+$client = new \Google\Client();
 $client->setAuthConfig('path/to/key.json');
 $client->setScopes([\Google_Service_Gmail::GMAIL_LABELS, \Google_Service_Gmail::GMAIL_SETTINGS_BASIC]);
 $client->setSubject('me@my.domain');
