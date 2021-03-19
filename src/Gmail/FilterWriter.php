@@ -23,7 +23,10 @@ class FilterWriter
 
     private ?Google_Service_Gmail_Resource_UsersSettingsFilters $resource = null;
 
-    private ?LabelManager $labelManager = null;
+    /**
+     * @var \TBF2GM\Gmail\LabelManager[]
+     */
+    private array $labelManagers = [];
 
     private array $defaultLabelNames;
 
@@ -51,7 +54,7 @@ class FilterWriter
     /**
      * @return \TBF2GM\Exception\FilterNotCreableException[]
      */
-    public function ensureFilters(?FilterList $filters): array
+    public function ensureFilters(?FilterList $filters, bool $dryRun = false): array
     {
         $exceptions = [];
         if ($filters !== null) {
@@ -59,7 +62,7 @@ class FilterWriter
                 /** @var \TBF2GM\Filter $filter */
                 if ($filter->isEnabled()) {
                     try {
-                        $this->ensureFilter($filter);
+                        $this->ensureFilter($filter, $dryRun);
                     } catch (Exception\FilterNotCreableException $x) {
                         $exceptions[] = $x;
                     }
@@ -70,13 +73,14 @@ class FilterWriter
         return $exceptions;
     }
 
-    protected function getLabelManager(): LabelManager
+    protected function getLabelManager(bool $dryRun): LabelManager
     {
-        if ($this->labelManager === null) {
-            $this->labelManager = new LabelManager($this->getClient());
+        $key = $dryRun ? 1 : 0;
+        if (!isset($this->labelManagers[$key])) {
+            $this->labelManagers[$key] = new LabelManager($this->getClient(), $dryRun);
         }
 
-        return $this->labelManager;
+        return $this->labelManagers[$key];
     }
 
     protected function getClient(): Client
@@ -105,40 +109,42 @@ class FilterWriter
     /**
      * @throws \TBF2GM\Exception\FilterNotCreableException
      */
-    protected function ensureFilter(Filter $filter): void
+    protected function ensureFilter(Filter $filter, bool $dryRun): void
     {
-        $gmailFilter = $this->createGmailFilter($filter);
-        try {
-            $this->getResource()->create('me', $gmailFilter);
-        } catch (GoogleServiceException $x) {
-            $errors = $x->getErrors();
-            switch ($errors[0]['message'] ?? null) {
-                case 'Unrecognized forwarding address':
-                    $x2 = new Exception\UnrecognizedForwardingAddressException($errors[0]['message']);
-                    $x2->setFilter($filter);
-                    foreach ($filter->getActions() as $action) {
-                        if ($action instanceof Action\Forward) {
-                            throw $x2->setForwardingAddress($action->getRecipient());
+        $gmailFilter = $this->createGmailFilter($filter, $dryRun);
+        if ($dryRun === false) {
+            try {
+                $this->getResource()->create('me', $gmailFilter);
+            } catch (GoogleServiceException $x) {
+                $errors = $x->getErrors();
+                switch ($errors[0]['message'] ?? null) {
+                    case 'Unrecognized forwarding address':
+                        $x2 = new Exception\UnrecognizedForwardingAddressException($errors[0]['message']);
+                        $x2->setFilter($filter);
+                        foreach ($filter->getActions() as $action) {
+                            if ($action instanceof Action\Forward) {
+                                throw $x2->setForwardingAddress($action->getRecipient());
+                            }
                         }
-                    }
-                    throw $x2;
-                case 'Filter already exists':
-                    $x2 = new Exception\FilterAlreadyExistsException($errors[0]['message']);
-                    throw $x2->setFilter($filter);
+                        throw $x2;
+                    case 'Filter already exists':
+                        $x2 = new Exception\FilterAlreadyExistsException($errors[0]['message']);
+                        throw $x2->setFilter($filter);
+                }
+                throw $x;
             }
-            throw $x;
         }
     }
 
     /**
      * @throws \TBF2GM\Exception\FilterNotCreableException
      */
-    protected function createGmailFilter(Filter $filter): Google_Service_Gmail_Filter
+    protected function createGmailFilter(Filter $filter, bool $dryRun): Google_Service_Gmail_Filter
     {
         $result = new Google_Service_Gmail_Filter();
         try {
             $result->setCriteria($filter->getConditions()->toGmailCriteria());
-            $result->setAction($filter->toGmailAction($this->getLabelManager()));
+            $result->setAction($filter->toGmailAction($this->getLabelManager($dryRun)));
         } catch (Exception\FilterNotCreableException $x) {
             throw $x->setFilter($filter);
         }

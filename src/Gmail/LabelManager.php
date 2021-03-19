@@ -18,14 +18,22 @@ class LabelManager
 
     private ?Google_Service_Gmail_Resource_UsersLabels $resource = null;
 
+    private bool $dryRun;
+
     /**
      * @var Google_Service_Gmail_Label[]|null
      */
     private ?array $existingLabels = null;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, bool $dryRun = false)
     {
         $this->client = $client;
+        $this->dryRun = $dryRun;
+    }
+
+    public function isDryRun(): bool
+    {
+        return $this->dryRun;
     }
 
     public function findLabelByFolder(Folder $folder, bool $caseSensitive = false): ?Google_Service_Gmail_Label
@@ -134,7 +142,12 @@ class LabelManager
     {
         $body = new Google_Service_Gmail_Label();
         $body->setName($path);
-        $label = $this->getService()->users_labels->create('me', $body);
+        if ($this->isDryRun()) {
+            $label = $body;
+            $label->setId("<new label for {$path}>");
+        } else {
+            $label = $this->getService()->users_labels->create('me', $body);
+        }
         $this->existingLabels[] = $label;
 
         return $label;
