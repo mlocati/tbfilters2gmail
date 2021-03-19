@@ -33,11 +33,15 @@ class Condition
 
     public const HOW_CONTAINS = 'contains';
 
+    public const HOW_DOESNOTCONTAIN = "doesn't contain";
+
     public const HOW_BEGINSWITH = 'begins with';
 
     public const HOW_ENDSWITH = 'ends with';
 
     public const HOW_IS = 'is';
+
+    public const HOW_ISNOT = "isn't";
 
     public const HOW_ISBEFORE = 'is before';
 
