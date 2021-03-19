@@ -46,10 +46,9 @@ class MsgFilterRulesDatParser
         if (!is_file($filename)) {
             throw new RuntimeException("Unable to find the file {$filename}");
         }
-        if (!is_readable($filename)) {
-            throw new RuntimeException("The file {$filename} is not readable");
-        }
+        set_error_handler(static function(): void {}, -1);
         $contents = file_get_contents($filename);
+        restore_error_handler();
         if (!is_string($contents)) {
             throw new RuntimeException("Failed to read The file {$filename}");
         }
