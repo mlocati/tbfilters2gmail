@@ -42,6 +42,7 @@ class Folder
 
     /**
      * @example mailbox://user@host/folder
+     * @example imap://user@host/folder
      *
      * @return static
      */
@@ -54,7 +55,7 @@ class Folder
         if ($parts === false) {
             throw new RuntimeException("Invalid folder specification: {$value}");
         }
-        if (($parts['scheme'] ?? '') !== 'mailbox') {
+        if (!in_array($parts['scheme'] ?? '', ['mailbox', 'imap'], true)) {
             throw new RuntimeException('Unsupported folder scheme: ' . ($parts['scheme'] ?? ''));
         }
         $host = $parts['host'] ?? '';
