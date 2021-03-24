@@ -193,6 +193,9 @@ class Filter
                         throw new RuntimeException('Unsupported JunkScore score');
                     }
                     break;
+                case Action\MarkFlagged::class:
+                    $addLabelIDs[] = 'STARRED';
+                    break;
                 case Action\MarkRead::class:
                     $removeLabelIDs[] = 'UNREAD';
                     break;

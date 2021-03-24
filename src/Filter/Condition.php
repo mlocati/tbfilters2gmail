@@ -17,9 +17,11 @@ class Condition
 
     public const TYPE_OR = 'or';
 
+    public const WHERE_FROM = 'from';
+
     public const WHERE_TO = 'to';
 
-    public const WHERE_FROM = 'from';
+    public const WHERE_CC = 'cc';
 
     public const WHERE_TO_CC = 'to or cc';
 
@@ -30,6 +32,8 @@ class Condition
     public const WHERE_BODY = 'body';
 
     public const WHERE_DATE = 'date';
+
+    public const WHERE_JUNKSTATUS = 'junk status';
 
     public const HOW_CONTAINS = 'contains';
 
@@ -136,6 +140,8 @@ class Condition
                 return $this->buildGmailFilter('from');
             case static::WHERE_TO:
                 return $this->buildGmailFilter('to');
+            case static::WHERE_CC:
+                return $this->buildGmailFilter('cc');
             case static::WHERE_TO_CC:
                 return '(' . implode(' ', [
                     $this->buildGmailFilter('to'),
@@ -159,7 +165,7 @@ class Condition
             case static::WHERE_DATE:
                 return $this->buildGmailDateFilter();
             default:
-                throw new Exception\FilterNotCreableException('Not implemented');
+                throw new Exception\FilterNotCreableException("Not implemented: {$this->getWhere()}");
         }
     }
 
@@ -246,14 +252,25 @@ class Condition
 
     protected function buildGmailFilter(string $key): string
     {
-        switch ($this->getHow()) {
+        $how = $this->getHow();
+        switch ($how) {
+            case static::HOW_DOESNOTCONTAIN:
+                return '-{' . $this->buildGmailFilterHow($key, static::HOW_CONTAINS) . '}';
+            default:
+                return $this->buildGmailFilterHow($key, $how);
+        }
+    }
+
+    protected function buildGmailFilterHow(string $key, string $how): string
+    {
+        switch ($how) {
             case static::HOW_BEGINSWITH:
             case static::HOW_CONTAINS:
             case static::HOW_ENDSWITH:
             case static::HOW_IS:
                 return ($key === '' ? '' : "{$key}:") . '"' . str_replace('"', '', $this->getSearch()) . '"';
             default:
-                throw new RuntimeException('Not implemented');
+                throw new RuntimeException("Not implemented: {$how}");
         }
     }
 
