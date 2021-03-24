@@ -73,6 +73,19 @@ class FilterWriter
         return $exceptions;
     }
 
+    public function deleteAllFilters(): int
+    {
+        $resource = $this->getResource();
+        $list = $resource->listUsersSettingsFilters('me');
+        $count = 0;
+        foreach ($list->getFilter() as $filter) {
+            $resource->delete('me', $filter->getId());
+            $count++;
+        }
+
+        return $count;
+    }
+
     protected function getLabelManager(bool $dryRun): LabelManager
     {
         $key = $dryRun ? 1 : 0;
