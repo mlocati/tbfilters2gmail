@@ -188,7 +188,7 @@ class Filter
                     if ($action->getScore() === 0) {
                         $removeLabelIDs[] = 'SPAM';
                     } elseif ($action->getScore() === 100) {
-                        $addLabelIDs[] = 'SPAM';
+                        $addLabelIDs[] = 'TRASH';
                     } else {
                         throw new RuntimeException('Unsupported JunkScore score');
                     }
